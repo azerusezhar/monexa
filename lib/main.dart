@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:monexa/screens/splash/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:monexa/utils/constants.dart';
-import 'package:monexa/screens/auth/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,10 +12,10 @@ void main() async {
   await dotenv.load();
   
   // Initialize Supabase
-  await Supabase.initialize(
-    url: Constants.supabaseUrl,
-    anonKey: Constants.supabaseAnonKey,
-  );
+await Supabase.initialize(
+  url: Constants.supabaseUrl,
+  anonKey: Constants.supabaseAnonKey,
+);
   
   runApp(const MyApp());
 }
@@ -25,8 +26,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Supabase Auth App',
+      title: 'Monexa',
       theme: ThemeData(
+        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         inputDecorationTheme: const InputDecorationTheme(
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),
+      home:  const SplashScreen(),
     );
   }
 }

@@ -30,28 +30,43 @@ class _OtpSentScreenState extends State<OtpSentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black, 
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.mark_email_read, size: 100, color: Colors.green),
+              Image.asset(
+                'assets/images/email_sent.png', 
+                width: 150,
+                height: 150,
+                fit: BoxFit.contain,
+              ),
               const SizedBox(height: 24),
               const Text(
-                'Kode OTP telah dikirim!',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                'Code has been sent to your email',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
-                'Cek email kamu:\n${widget.email}',
+                'Check your email:\n${widget.email}',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16, color: Colors.white70),
               ),
               const SizedBox(height: 32),
-              const CircularProgressIndicator(),
+              const CircularProgressIndicator(
+                color: Color(0xFF7F3DFF), 
+              ),
               const SizedBox(height: 16),
-              const Text('Mengalihkan ke halaman verifikasi...'),
+              const Text(
+                'Redirecting to verification page...',
+                style: TextStyle(color: Colors.white70),
+              ),
             ],
           ),
         ),
