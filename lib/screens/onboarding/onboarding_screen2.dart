@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:monexa/screens/onboarding/onboarding_screens3.dart';
+import 'package:monexa/screens/onboarding/onboarding_screen3.dart';
 
 class OnboardingScreen2 extends StatefulWidget {
   const OnboardingScreen2({super.key});

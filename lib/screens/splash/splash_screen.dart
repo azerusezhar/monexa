@@ -1,27 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:monexa/screens/home_screen.dart';
 import 'package:monexa/screens/onboarding/onboarding_screen1.dart';
+import 'package:monexa/screens/profiles/setup_profile_screen.dart';
+import 'package:monexa/pin/setup_pin_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
-    @override
+  @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
-    
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const OnboardingScreen1()),
-      );
-    });
+    checkLoginStatus(); 
   }
+
+Future<void> checkLoginStatus() async {
+  final client = Supabase.instance.client;
+  final user = client.auth.currentUser;
+
+  if (user == null) {
+    await Future.delayed(const Duration(seconds: 3));
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const OnboardingScreen1()),
+    );
+    return;
+  }
+
+  // Menggunakan maybeSingle() agar bisa null
+  final Map<String, dynamic>? profile = await client
+      .from('profiles')
+      .select()
+      .eq('id', user.id)
+      .maybeSingle()
+      .catchError((_) => null);
+
+  await Future.delayed(const Duration(seconds: 3));
+
+  if (profile == null) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const SetupProfileScreen()),
+    );
+  } else if (profile['pin_hash'] == null) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const SetupPinScreen()),
+    );
+  } else {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +77,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.5), 
+                    color: Colors.white.withValues(alpha: 0.5),
                     blurRadius: 70,
                     spreadRadius: 8,
                   ),
@@ -54,7 +92,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
                 letterSpacing: 0,
-
               ),
             ),
           ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:monexa/screens/splash/splash_screen.dart';
+import 'package:monexa/setup_success_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:monexa/utils/constants.dart';
 
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home:  const SplashScreen(),
+      home:  const SetupSuccessScreen(),
     );
   }
 }
