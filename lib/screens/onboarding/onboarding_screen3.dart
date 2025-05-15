@@ -275,7 +275,6 @@ class _OnboardingScreen3State extends State<OnboardingScreen3> with TickerProvid
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
             ],
           ),
         ),

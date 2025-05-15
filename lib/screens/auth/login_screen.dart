@@ -5,7 +5,7 @@ import 'package:monexa/screens/profiles/setup_profile_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:monexa/screens/auth/forgot_password_screen.dart';
 import 'package:monexa/screens/auth/register_screen.dart';
-import 'package:monexa/screens/dashboard/dashboard_screen.dart';
+import 'package:monexa/screens/main_container.dart';
 import 'package:monexa/services/supabase_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -119,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen>
                 pageBuilder:
                     (_, animation, __) => FadeTransition(
                       opacity: animation,
-                      child: const DashboardScreen(),
+                      child: const MainContainer(),
                     ),
                 transitionDuration: const Duration(milliseconds: 400),
               ),
@@ -130,6 +130,23 @@ class _LoginScreenState extends State<LoginScreen>
             context,
           ).showSnackBar(SnackBar(content: Text("Error fetching profile: $e")));
         }
+      }
+    } catch (e) {
+      if (mounted) {
+        String errorMessage = 'Login failed';
+
+        if (e is AuthException) {
+          errorMessage = e.message;
+        } else if (e.toString().contains('invalid_credentials')) {
+          errorMessage = 'Invalid email or password. Please try again.';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red[700],
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -142,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen>
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+        MaterialPageRoute(builder: (_) => const MainContainer()),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

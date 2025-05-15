@@ -7,16 +7,16 @@ import 'package:monexa/utils/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Load .env file
   await dotenv.load();
-  
+
   // Initialize Supabase
-await Supabase.initialize(
-  url: Constants.supabaseUrl,
-  anonKey: Constants.supabaseAnonKey,
-);
-  
+  await Supabase.initialize(
+    url: Constants.supabaseUrl,
+    anonKey: Constants.supabaseAnonKey,
+  );
+
   runApp(const MyApp());
 }
 
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home:   SplashScreen(),
+      home: SplashScreen(),
     );
   }
 }

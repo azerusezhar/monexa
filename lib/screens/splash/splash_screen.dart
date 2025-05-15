@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:monexa/screens/dashboard/dashboard_screen.dart';
+import 'package:monexa/screens/main_container.dart';
 import 'package:monexa/screens/onboarding/onboarding_screen1.dart';
 import 'package:monexa/screens/profiles/setup_profile_screen.dart';
 import 'package:monexa/screens/pin/setup_pin_screen.dart';
@@ -17,49 +17,48 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    checkLoginStatus(); 
+    checkLoginStatus();
   }
 
-Future<void> checkLoginStatus() async {
-  final client = Supabase.instance.client;
-  final user = client.auth.currentUser;
+  Future<void> checkLoginStatus() async {
+    final client = Supabase.instance.client;
+    final user = client.auth.currentUser;
 
-  if (user == null) {
+    if (user == null) {
+      await Future.delayed(const Duration(seconds: 3));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const OnboardingScreen1()),
+      );
+      return;
+    }
+
+    final Map<String, dynamic>? profile = await client
+        .from('profiles')
+        .select()
+        .eq('id', user.id)
+        .maybeSingle()
+        .catchError((_) => null);
+
     await Future.delayed(const Duration(seconds: 3));
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const OnboardingScreen1()),
-    );
-    return;
+
+    if (profile == null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const SetupProfileScreen()),
+      );
+    } else if (profile['pin_hash'] == null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const SetupPinScreen()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainContainer()),
+      );
+    }
   }
-
-
-  final Map<String, dynamic>? profile = await client
-      .from('profiles')
-      .select()
-      .eq('id', user.id)
-      .maybeSingle()
-      .catchError((_) => null);
-
-  await Future.delayed(const Duration(seconds: 3));
-
-  if (profile == null) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const SetupProfileScreen()),
-    );
-  } else if (profile['pin_hash'] == null) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const SetupPinScreen()),
-    );
-  } else {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const DashboardScreen()),
-    );
-  }
-}
 
   @override
   Widget build(BuildContext context) {

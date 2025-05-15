@@ -72,13 +72,12 @@ class SupabaseService {
     }
   }
 
-  // Verifikasi OTP untuk registrasi atau login
   Future<AuthResponse> verifyOTP(String email, String token) async {
     try {
       final response = await client.auth.verifyOTP(
         email: email,
         token: token,
-        type: OtpType.signup, // Sesuaikan dengan jenis OTP yang digunakan
+        type: OtpType.signup, 
       );
       return response;
     } catch (e) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:monexa/screens/dashboard/dashboard_screen.dart';
+import 'package:monexa/screens/main_container.dart';
 
 class SetupSuccessScreen extends StatefulWidget {
   const SetupSuccessScreen({super.key});
@@ -27,7 +27,7 @@ class _SetupSuccessScreenState extends State<SetupSuccessScreen>
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+        MaterialPageRoute(builder: (_) => const MainContainer()),
       );
     });
   }
@@ -49,7 +49,7 @@ class _SetupSuccessScreenState extends State<SetupSuccessScreen>
             Icon(
               Icons.check_circle_outline,
               size: 100,
-              color: const Color(0xFF2ECC71),   
+              color: const Color(0xFF2ECC71),
             ),
             const SizedBox(height: 24),
             Text(

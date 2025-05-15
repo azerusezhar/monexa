@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:monexa/screens/auth/login_screen.dart';
 import 'package:monexa/screens/auth/reset_password_screen.dart';
 import 'package:monexa/screens/profiles/edit_profile_screen.dart';
-import 'package:monexa/widget/bottom_navigation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -150,19 +149,6 @@ class ProfilePage extends StatelessWidget {
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF2A2A2A),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: const Color(0xFF3D3D3D),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Icons.edit_rounded,
-                                    size: 18,
-                                    color: Colors.white,
-                                  ),
                                 ),
                               ),
                             ),
@@ -288,7 +274,6 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
           ),
-          bottomNavigationBar: BottomNavigation(currentIndex: 3),
         );
       },
     );
