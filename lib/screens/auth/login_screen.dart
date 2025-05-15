@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:monexa/screens/pin/setup_pin_screen.dart';
+import 'package:monexa/screens/onboarding/onboarding_screen3.dart';
+import 'package:monexa/screens/profiles/setup_profile_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:monexa/screens/auth/forgot_password_screen.dart';
 import 'package:monexa/screens/auth/register_screen.dart';
-import 'package:monexa/screens/home_screen.dart';
+import 'package:monexa/screens/dashboard/dashboard_screen.dart';
 import 'package:monexa/services/supabase_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,7 +15,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -48,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     );
 
     _animationController.forward();
-
   }
 
   @override
@@ -75,30 +78,59 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       if (!mounted) return;
 
       if (response.user != null) {
+        final client = Supabase.instance.client;
+        final userId = response.user!.id;
+
+        // Tampilkan loading singkat
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Login successful!'),
+            content: Text('Logging in...'),
             backgroundColor: Color(0xFF7F3DFF),
           ),
         );
-        await Future.delayed(const Duration(milliseconds: 400));
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (_, animation, __) =>
-                FadeTransition(opacity: animation, child: const HomeScreen()),
-            transitionDuration: const Duration(milliseconds: 400),
-          ),
-        );
+
+        try {
+          // Ambil data profile
+          final profile = await client
+              .from('profiles')
+              .select()
+              .eq('id', userId)
+              .maybeSingle()
+              .catchError((_) => null);
+
+          if (!mounted) return;
+
+          if (profile == null) {
+            // Belum ada profile → Setup Profile
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const SetupProfileScreen()),
+            );
+          } else if (profile['pin_hash'] == null) {
+            // Sudah ada profile tapi belum ada pin → Setup PIN
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const SetupPinScreen()),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder:
+                    (_, animation, __) => FadeTransition(
+                      opacity: animation,
+                      child: const DashboardScreen(),
+                    ),
+                transitionDuration: const Duration(milliseconds: 400),
+              ),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("Error fetching profile: $e")));
+        }
       }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -110,11 +142,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const DashboardScreen()),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google login failed: $e'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('Google login failed: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -173,7 +208,12 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed:
+                          () => Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (_) => const OnboardingScreen3(),
+                            ),
+                          ),
                     ),
                     const SizedBox(height: 24),
                     const Text(
@@ -201,8 +241,12 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         label: 'Email',
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value == null || value.isEmpty) return 'Please enter your email';
-                          if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w]{2,4}$').hasMatch(value)) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          if (!RegExp(
+                            r'^[\w-.]+@([\w-]+\.)+[\w]{2,4}$',
+                          ).hasMatch(value)) {
                             return 'Enter a valid email';
                           }
                           return null;
@@ -222,7 +266,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         keyboardType: TextInputType.visiblePassword,
                         obscureText: true,
                         validator: (value) {
-                          if (value == null || value.length < 6) return 'Minimum 6 characters';
+                          if (value == null || value.length < 6) {
+                            return 'Minimum 6 characters';
+                          }
                           return null;
                         },
                         focusNode: _passwordFocus,
@@ -255,22 +301,31 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
+                      child:
+                          _isLoading
+                              ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : const Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
                               ),
-                            )
-                          : const Text(
-                              'Login',
-                              style: TextStyle(fontSize: 16, color: Colors.white),
-                            ),
                     ),
                     const SizedBox(height: 20),
-                    const Center(child: Text('Or with', style: TextStyle(color: Colors.white70))),
+                    const Center(
+                      child: Text(
+                        'Or with',
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _isLoading ? null : _signInWithGoogle,
@@ -304,7 +359,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('Don\'t have an account?', style: TextStyle(color: Colors.white70)),
+                          const Text(
+                            'Don\'t have an account?',
+                            style: TextStyle(color: Colors.white70),
+                          ),
                           TextButton(
                             onPressed: () {
                               Navigator.push(
@@ -314,7 +372,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                               );
                             },
-                            child: const Text('Register', style: TextStyle(color: Color(0xFF9B51E0))),
+                            child: const Text(
+                              'Register',
+                              style: TextStyle(color: Color(0xFF9B51E0)),
+                            ),
                           ),
                         ],
                       ),

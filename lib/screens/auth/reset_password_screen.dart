@@ -141,7 +141,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Ganti Password',
+          'Reset Password',
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         backgroundColor: Colors.transparent,
@@ -174,9 +174,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                       label: 'New Password',
                       obscureText: _obscurePassword,
                       validator: (value) {
-                        if (value == null || value.isEmpty)
-                          return 'Password tidak boleh kosong';
-                        if (value.length < 6) return 'Minimal 6 karakter';
+                        if (value == null || value.isEmpty) {
+                          return 'Password is required';
+                        }
+                        if (value.length < 6) return 'Password must be at least 6 characters';
                         return null;
                       },
                     ),
@@ -189,7 +190,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                       validator: (value) {
                         if (value == null ||
                             value != _passwordController.text) {
-                          return 'Password tidak cocok';
+                          return 'Password not match';
                         }
                         return null;
                       },

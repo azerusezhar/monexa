@@ -30,14 +30,17 @@
         </activity>
 
         <!-- Intent filter untuk menangani callback Google OAuth -->
-        <activity android:name="com.supabase.flutter.supabase_flutter.SupabaseDeepLinkingActivity">
-            <intent-filter android:label="monexa">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="io.supabase.monexa" /> <!-- Sesuaikan dengan URL Scheme -->
-            </intent-filter>
-        </activity>
+<activity
+    android:name="com.supabase.flutter.supabase_flutter.SupabaseDeepLinkingActivity"
+    android:exported="true">
+    <intent-filter android:label="monexa">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="io.supabase.monexa" />
+    </intent-filter>
+</activity>
+
 
         <!-- Flutter generated plugin registrant -->
         <meta-data

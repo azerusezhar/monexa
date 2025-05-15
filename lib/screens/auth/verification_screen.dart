@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:monexa/screens/auth/login_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:monexa/screens/home_screen.dart';
 import 'package:monexa/services/supabase_service.dart';
 
 class VerificationScreen extends StatefulWidget {
@@ -85,7 +85,7 @@ class _VerificationScreenState extends State<VerificationScreen>
           context,
           PageRouteBuilder(
             pageBuilder: (_, animation, __) =>
-                FadeTransition(opacity: animation, child: const HomeScreen()),
+                FadeTransition(opacity: animation, child: const LoginScreen()),
             transitionDuration: const Duration(milliseconds: 400),
           ),
           (route) => false,

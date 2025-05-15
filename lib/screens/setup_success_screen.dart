@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:monexa/screens/home_screen.dart';
+import 'package:monexa/screens/dashboard/dashboard_screen.dart';
 
 class SetupSuccessScreen extends StatefulWidget {
   const SetupSuccessScreen({super.key});
@@ -27,7 +27,7 @@ class _SetupSuccessScreenState extends State<SetupSuccessScreen>
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const DashboardScreen()),
       );
     });
   }

@@ -265,8 +265,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                         TextInputType.emailAddress,
                         focusNode: _emailFocus,
                         validator: (value) {
-                          if (value == null || value.isEmpty)
+                          if (value == null || value.isEmpty) {
                             return 'Please enter your email';
+                          }
                           if (!RegExp(
                             r'^[\w-.]+@([\w-]+\.)+[\w]{2,4}$',
                           ).hasMatch(value)) {
@@ -290,8 +291,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                         keyboardType: TextInputType.visiblePassword,
                         obscureText: _obscurePassword,
                         validator: (value) {
-                          if (value == null || value.length < 6)
+                          if (value == null || value.length < 6) {
                             return 'Minimum 6 characters';
+                          }
                           return null;
                         },
                         style: const TextStyle(color: Colors.white),

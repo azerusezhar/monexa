@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:monexa/pin/setup_pin_screen.dart';
+import 'package:monexa/screens/pin/setup_pin_screen.dart';
+import 'package:monexa/screens/auth/login_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 import 'package:path/path.dart' as path;
@@ -93,7 +94,9 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+          ),
         ),
       ),
       body: SafeArea(
@@ -197,8 +200,9 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                       ),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return "Please enter your phone number";
+                      }
                       return null;
                     },
                   ),
@@ -225,8 +229,9 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                       ),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return "Please enter your name";
+                      }
                       return null;
                     },
                   ),
@@ -253,8 +258,9 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                       ),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return "Please enter a username";
+                      }
                       return null;
                     },
                   ),

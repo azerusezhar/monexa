@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:monexa/screens/home_screen.dart';
+import 'package:monexa/screens/dashboard/dashboard_screen.dart';
 import 'package:monexa/screens/onboarding/onboarding_screen1.dart';
 import 'package:monexa/screens/profiles/setup_profile_screen.dart';
-import 'package:monexa/pin/setup_pin_screen.dart';
+import 'package:monexa/screens/pin/setup_pin_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ Future<void> checkLoginStatus() async {
     return;
   }
 
-  // Menggunakan maybeSingle() agar bisa null
+
   final Map<String, dynamic>? profile = await client
       .from('profiles')
       .select()
@@ -56,7 +56,7 @@ Future<void> checkLoginStatus() async {
   } else {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      MaterialPageRoute(builder: (_) => const DashboardScreen()),
     );
   }
 }
