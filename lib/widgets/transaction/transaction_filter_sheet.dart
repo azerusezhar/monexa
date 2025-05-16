@@ -441,6 +441,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 8),
+      height: MediaQuery.of(context).size.height * 0.75,
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
@@ -472,7 +473,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
 
           // Header with title and reset button
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -510,108 +511,33 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
           ),
 
           Expanded(
-            child: CustomScrollView(
+            child: ListView(
+              padding: EdgeInsets.zero,
               physics: const BouncingScrollPhysics(),
-              slivers: [
+              children: [
                 // Filter By Section
-                SliverToBoxAdapter(
-                  child: _buildFilterSection(
-                    "Filter By",
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        children:
-                            widget.filterByOptions.map((option) {
-                              bool isSelected = tempFilter == option;
-                              return Container(
-                                margin: const EdgeInsets.only(right: 12),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      tempFilter = isSelected ? 'all' : option;
-                                    });
-                                  },
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 14,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          isSelected
-                                              ? const Color(
-                                                0xFF7F3DFF,
-                                              ).withOpacity(0.3)
-                                              : Colors.grey[900],
-                                      borderRadius: BorderRadius.circular(20),
-                                      border:
-                                          isSelected
-                                              ? Border.all(
-                                                color: const Color(0xFF7F3DFF),
-                                                width: 1.5,
-                                              )
-                                              : Border.all(
-                                                color: Colors.grey[800]!,
-                                                width: 1,
-                                              ),
-                                      boxShadow:
-                                          isSelected
-                                              ? [
-                                                BoxShadow(
-                                                  color: const Color(
-                                                    0xFF7F3DFF,
-                                                  ).withOpacity(0.3),
-                                                  blurRadius: 8,
-                                                  spreadRadius: 0,
-                                                ),
-                                              ]
-                                              : null,
-                                    ),
-                                    child: Text(
-                                      capitalizeFirstLetter(option),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight:
-                                            isSelected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Sort By Section
-                SliverToBoxAdapter(
-                  child: _buildFilterSection(
-                    "Sort By",
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children:
-                            widget.sortByOptions.map((option) {
-                              bool isSelected = tempSort == option;
-                              return InkWell(
+                _buildFilterSection(
+                  "Filter By",
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children:
+                          widget.filterByOptions.map((option) {
+                            bool isSelected = tempFilter == option;
+                            return Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: InkWell(
                                 onTap: () {
                                   setState(() {
-                                    tempSort = option;
+                                    tempFilter = isSelected ? 'all' : option;
                                   });
                                 },
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
+                                    horizontal: 24,
                                     vertical: 14,
                                   ),
                                   decoration: BoxDecoration(
@@ -645,199 +571,254 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                                             ]
                                             : null,
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        _getSortIcon(option),
-                                        color:
-                                            isSelected
-                                                ? Colors.white
-                                                : Colors.grey[400],
-                                        size: 18,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        capitalizeFirstLetter(option),
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                          fontWeight:
-                                              isSelected
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                        ),
-                                      ),
-                                    ],
+                                  child: Text(
+                                    capitalizeFirstLetter(option),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight:
+                                          isSelected
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                    ),
                                   ),
                                 ),
-                              );
-                            }).toList(),
-                      ),
+                              ),
+                            );
+                          }).toList(),
                     ),
                   ),
                 ),
 
-                // Category Section
-                SliverToBoxAdapter(
-                  child: _buildFilterSection(
-                    "Category",
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: InkWell(
-                        onTap: () {
-                          // Show category selection dialog
-                          _showCategorySelectionDialog(
-                            context,
-                            tempCategories,
-                            (selected) {
-                              setState(() {
-                                tempCategories = selected;
-                              });
-                            },
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(16),
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[900],
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color:
-                                  tempCategories.isNotEmpty
-                                      ? const Color(0xFF7F3DFF).withOpacity(0.7)
-                                      : Colors.grey[800]!,
-                              width: tempCategories.isNotEmpty ? 1.5 : 1,
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        tempCategories.isEmpty
-                                            ? "Choose Categories"
-                                            : "${tempCategories.length} Categories Selected",
-                                        style: TextStyle(
-                                          color:
-                                              tempCategories.isEmpty
-                                                  ? Colors.grey[500]
-                                                  : Colors.white,
-                                          fontSize: 16,
-                                          fontWeight:
-                                              tempCategories.isNotEmpty
-                                                  ? FontWeight.w600
-                                                  : FontWeight.normal,
-                                        ),
+                // Sort By Section
+                _buildFilterSection(
+                  "Sort By",
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children:
+                          widget.sortByOptions.map((option) {
+                            bool isSelected = tempSort == option;
+                            return InkWell(
+                              onTap: () {
+                                setState(() {
+                                  tempSort = option;
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 14,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      isSelected
+                                          ? const Color(
+                                            0xFF7F3DFF,
+                                          ).withOpacity(0.3)
+                                          : Colors.grey[900],
+                                  borderRadius: BorderRadius.circular(20),
+                                  border:
+                                      isSelected
+                                          ? Border.all(
+                                            color: const Color(0xFF7F3DFF),
+                                            width: 1.5,
+                                          )
+                                          : Border.all(
+                                            color: Colors.grey[800]!,
+                                            width: 1,
+                                          ),
+                                  boxShadow:
+                                      isSelected
+                                          ? [
+                                            BoxShadow(
+                                              color: const Color(
+                                                0xFF7F3DFF,
+                                              ).withOpacity(0.3),
+                                              blurRadius: 8,
+                                              spreadRadius: 0,
+                                            ),
+                                          ]
+                                          : null,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      _getSortIcon(option),
+                                      color:
+                                          isSelected
+                                              ? Colors.white
+                                              : Colors.grey[400],
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      capitalizeFirstLetter(option),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight:
+                                            isSelected
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
                                       ),
-                                      if (tempCategories.isNotEmpty)
-                                        Container(
-                                          margin: const EdgeInsets.only(
-                                            left: 10,
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: const Color(
-                                              0xFF7F3DFF,
-                                            ).withOpacity(0.2),
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            tempCategories.length.toString(),
-                                            style: const TextStyle(
-                                              color: Color(0xFF7F3DFF),
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 13,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Colors.grey[500],
-                                    size: 16,
-                                  ),
-                                ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                              if (tempCategories.isNotEmpty) ...[
-                                const SizedBox(height: 16),
-                                SizedBox(
-                                  height: 32,
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    physics: const BouncingScrollPhysics(),
-                                    children:
-                                        tempCategories.map((cat) {
-                                          final category =
-                                              TransactionCategory.fromName(cat);
-                                          return Container(
-                                            margin: const EdgeInsets.only(
-                                              right: 10,
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: category.color.withOpacity(
-                                                0.2,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              border: Border.all(
-                                                color: category.color
-                                                    .withOpacity(0.4),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  category.icon,
-                                                  color: category.color,
-                                                  size: 14,
-                                                ),
-                                                const SizedBox(width: 6),
-                                                Text(
-                                                  category.label,
-                                                  style: TextStyle(
-                                                    color: category.color,
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        }).toList(),
+                            );
+                          }).toList(),
+                    ),
+                  ),
+                ),
+
+                // Category Section (simplified to just show selection button in half screen mode)
+                _buildFilterSection(
+                  "Category",
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: InkWell(
+                      onTap: () {
+                        // Show category selection dialog
+                        _showCategorySelectionDialog(context, tempCategories, (
+                          selected,
+                        ) {
+                          setState(() {
+                            tempCategories = selected;
+                          });
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 20,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[900],
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color:
+                                tempCategories.isNotEmpty
+                                    ? const Color(0xFF7F3DFF).withOpacity(0.7)
+                                    : Colors.grey[800]!,
+                            width: tempCategories.isNotEmpty ? 1.5 : 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  tempCategories.isEmpty
+                                      ? "Choose Categories"
+                                      : "${tempCategories.length} Categories Selected",
+                                  style: TextStyle(
+                                    color:
+                                        tempCategories.isEmpty
+                                            ? Colors.grey[500]
+                                            : Colors.white,
+                                    fontSize: 16,
+                                    fontWeight:
+                                        tempCategories.isNotEmpty
+                                            ? FontWeight.w600
+                                            : FontWeight.normal,
                                   ),
                                 ),
+                                if (tempCategories.isNotEmpty)
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFF7F3DFF,
+                                      ).withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(
+                                      tempCategories.length.toString(),
+                                      style: const TextStyle(
+                                        color: Color(0xFF7F3DFF),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
                               ],
-                            ],
-                          ),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.grey[500],
+                              size: 16,
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                // Spacer
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 90), // Space for the button
-                ),
+                // Display selected category chips
+                if (tempCategories.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Container(
+                      height: 40,
+                      margin: const EdgeInsets.only(bottom: 24),
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        children:
+                            tempCategories.map((cat) {
+                              final category = TransactionCategory.fromName(
+                                cat,
+                              );
+                              return Container(
+                                margin: const EdgeInsets.only(right: 10),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: category.color.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: category.color.withOpacity(0.4),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      category.icon,
+                                      color: category.color,
+                                      size: 14,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      category.label,
+                                      style: TextStyle(
+                                        color: category.color,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -866,7 +847,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF7F3DFF),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),

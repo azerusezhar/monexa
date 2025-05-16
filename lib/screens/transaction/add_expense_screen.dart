@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 // Sesuaikan path sesuai struktur projekmu
 import '../../utils/transaction_category.dart';
 import '../../utils/formatters.dart';
+import '../../screens/main_container.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
@@ -104,7 +105,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       debugPrint("Insert response: $response");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pemasukan berhasil disimpan')),
+          const SnackBar(content: Text('Expense added successfully')),
+        );
+        // Navigate to the dashboard screen using direct navigation
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const MainContainer()),
+          (route) => false,
         );
       }
     }

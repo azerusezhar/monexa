@@ -232,6 +232,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           isEditing ? "Edit Transaction" : "Transaction Details",
           style: const TextStyle(
@@ -276,10 +277,18 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   style: TextStyle(color: Colors.grey[500]),
                 ),
               )
-              : SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child:
-                    isEditing ? _buildEditForm() : _buildTransactionDetails(),
+              : RefreshIndicator(
+                color: const Color(0xFF7F3DFF),
+                backgroundColor: Colors.grey[900],
+                onRefresh: () async {
+                  await fetchTransactionDetails();
+                },
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child:
+                      isEditing ? _buildEditForm() : _buildTransactionDetails(),
+                ),
               ),
       bottomNavigationBar:
           isEditing

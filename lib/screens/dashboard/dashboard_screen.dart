@@ -124,7 +124,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         59,
       );
 
-      // Apply date filters
       final response = await query
           .gte('date', startOfMonth.toIso8601String())
           .lte('date', endOfMonth.toIso8601String())
@@ -247,7 +246,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
         child:
-            _fullName != null
+            _fullName != null && _avatarUrl != null
                 ? CircleAvatar(
                   backgroundImage: NetworkImage(_avatarUrl!),
                   radius: 18,
@@ -873,48 +872,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: _buildCustomAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            _buildBalanceCard(),
-            const SizedBox(height: 24),
-            _buildIncomeExpenseRow(),
-            const SizedBox(height: 32),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Income and Expense Analysis',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+      body: RefreshIndicator(
+        color: const Color(0xFF7F3DFF),
+        backgroundColor: Colors.grey[900],
+        onRefresh: () async {
+          await _fetchUserDataAndMetrics();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              _buildBalanceCard(),
+              const SizedBox(height: 24),
+              _buildIncomeExpenseRow(),
+              const SizedBox(height: 32),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildSpendFrequencyChart(),
-                ],
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Income and Expense Analysis',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildSpendFrequencyChart(),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            _buildRecentTransactionsHeader(),
-            const SizedBox(height: 12),
-            _buildRecentTransactionList(),
-          ],
+              const SizedBox(height: 24),
+              _buildRecentTransactionsHeader(),
+              const SizedBox(height: 12),
+              _buildRecentTransactionList(),
+            ],
+          ),
         ),
       ),
     );

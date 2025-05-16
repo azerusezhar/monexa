@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:monexa/screens/setup_success_screen.dart';
+import 'package:monexa/screens/splash/setup_success_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:crypto/crypto.dart';
 

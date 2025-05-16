@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 // Sesuaikan path sesuai struktur projekmu
 import '../../utils/transaction_category.dart';
 import '../../utils/formatters.dart';
+import '../../screens/main_container.dart';
 
 class AddIncomeScreen extends StatefulWidget {
   const AddIncomeScreen({super.key});
@@ -105,6 +106,12 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Pemasukan berhasil disimpan')),
+        );
+
+        // Navigate to the dashboard screen using direct navigation
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const MainContainer()),
+          (route) => false,
         );
       }
     }

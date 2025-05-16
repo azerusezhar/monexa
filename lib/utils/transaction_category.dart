@@ -155,14 +155,44 @@ class TransactionCategory {
 
   /// Cari kategori berdasarkan nama
   static TransactionCategory fromName(String name) {
+    // First try exact match
+    final normalizedName = name.toLowerCase().trim();
+
+    // Map some common names to their standardized form
+    final nameMapping = {
+      'shopping': 'shopping',
+      'food': 'food',
+      'transportation': 'transportation',
+      'health': 'health',
+      'entertainment': 'entertainment',
+      'housing': 'rent',
+      'utilities': 'bills',
+      'education': 'education',
+      'personal': 'others',
+      'others': 'others',
+      'other': 'others',
+    };
+
+    // Get the standardized name if it exists in the mapping
+    final standardName = nameMapping[normalizedName] ?? normalizedName;
+
     return allCategories.firstWhere(
-      (cat) => cat.name == name,
-      orElse: () => TransactionCategory(
-        name: 'unknown',
-        label: 'Unknown',
-        icon: Icons.help_outline,
-        color: Colors.grey,
-      ),
+      (cat) => cat.name.toLowerCase() == standardName,
+      orElse:
+          () => TransactionCategory(
+            name: name,
+            label: name
+                .split('_')
+                .map(
+                  (word) =>
+                      word.isNotEmpty
+                          ? '${word[0].toUpperCase()}${word.substring(1)}'
+                          : '',
+                )
+                .join(' '),
+            icon: Icons.category,
+            color: Colors.purple,
+          ),
     );
   }
 }

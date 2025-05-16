@@ -25,6 +25,9 @@ class _EnhancedTransactionsPageState extends State<EnhancedTransactionsPage> {
   String? selectedCategory;
   bool isFiltering = false;
 
+  // Add a TextEditingController to manage the search text
+  final TextEditingController _searchController = TextEditingController();
+
   // Month filtering
   DateTime _selectedDate = DateTime.now();
   bool _showAllMonths = false;
@@ -60,6 +63,19 @@ class _EnhancedTransactionsPageState extends State<EnhancedTransactionsPage> {
   void initState() {
     super.initState();
     transactions = fetchTransactions();
+
+    // Add a listener to the controller to handle changes
+    _searchController.addListener(() {
+      if (_searchController.text != searchQuery) {
+        filterTransactions(_searchController.text);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<List<Transaction>> fetchTransactions() async {
@@ -135,6 +151,7 @@ class _EnhancedTransactionsPageState extends State<EnhancedTransactionsPage> {
       searchQuery = query;
     });
 
+    // Apply filters immediately when search query changes
     applyFilters();
   }
 
@@ -145,14 +162,18 @@ class _EnhancedTransactionsPageState extends State<EnhancedTransactionsPage> {
 
       // Apply search query filter if any
       if (searchQuery.isNotEmpty) {
+        final String lowercaseQuery = searchQuery.toLowerCase().trim();
         filtered =
             filtered.where((transaction) {
               return transaction.description.toLowerCase().contains(
-                    searchQuery.toLowerCase(),
+                    lowercaseQuery,
                   ) ||
-                  transaction.category.toLowerCase().contains(
-                    searchQuery.toLowerCase(),
-                  );
+                  transaction.category.toLowerCase().contains(lowercaseQuery) ||
+                  transaction.amount.toString().contains(lowercaseQuery) ||
+                  (transaction.type.toLowerCase() == 'income' &&
+                      'income'.contains(lowercaseQuery)) ||
+                  (transaction.type.toLowerCase() == 'expense' &&
+                      'expense'.contains(lowercaseQuery));
             }).toList();
       }
 
@@ -214,6 +235,11 @@ class _EnhancedTransactionsPageState extends State<EnhancedTransactionsPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       elevation: 0,
+      isDismissible: true,
+      enableDrag: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.75,
+      ),
       builder: (context) {
         return TransactionFilterSheet(
           initialFilter: selectedFilter,
@@ -461,36 +487,31 @@ class _EnhancedTransactionsPageState extends State<EnhancedTransactionsPage> {
     return text[0].toUpperCase() + text.substring(1);
   }
 
+  void clearSearch() {
+    setState(() {
+      _searchController.clear();
+      searchQuery = '';
+    });
+    applyFilters();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF0F0F0F),
         elevation: 0,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: InkWell(
-          onTap: () => _showMonthPicker(context),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _selectedMonth,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.white60,
-                  size: 20,
-                ),
-              ],
+        title: Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: Text(
+            'Transactions',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.9),
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -500,39 +521,128 @@ class _EnhancedTransactionsPageState extends State<EnhancedTransactionsPage> {
             onPressed: showFilterBottomSheet,
           ),
         ],
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF1A1A1A), Color(0xFF000000)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-        ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(80.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                onChanged: filterTransactions,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: "Search",
-                  hintStyle: TextStyle(color: Colors.grey[500]),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 12,
+          preferredSize: const Size.fromHeight(120.0),
+          child: Column(
+            children: [
+              InkWell(
+                onTap: () => _showMonthPicker(context),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1C1C1E),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF7F3DFF).withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.calendar_month,
+                        color: Color(0xFF7F3DFF),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _selectedMonth,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white60,
+                        size: 20,
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFF303030),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: filterTransactions,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    cursorColor: const Color(0xFF7F3DFF),
+                    decoration: InputDecoration(
+                      fillColor: const Color(0xFF1F1F1F),
+                      filled: true,
+                      hintText: "Search transactions...",
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Color(0xFF7F3DFF),
+                      ),
+                      suffixIcon:
+                          _searchController.text.isNotEmpty
+                              ? IconButton(
+                                icon: const Icon(
+                                  Icons.clear,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: clearSearch,
+                              )
+                              : const Padding(
+                                padding: EdgeInsets.only(right: 8.0),
+                                child: Icon(Icons.mic, color: Colors.grey),
+                              ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 12,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF7F3DFF),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
         ),
       ),
