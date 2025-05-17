@@ -105,7 +105,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
       debugPrint("Insert response: $response");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pemasukan berhasil disimpan')),
+          const SnackBar(content: Text('Income added successfully')),
         );
 
         // Navigate to the dashboard screen using direct navigation
